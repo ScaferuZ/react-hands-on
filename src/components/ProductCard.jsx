@@ -11,14 +11,16 @@ export default function ProductCard({ product, onAdd }) {
       <img src={img} alt={name} className="card-img" />
 
       <div className="card-row">
-        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+        <div className="card-meta">
           <Badge>{category}</Badge>
-          <div style={{fontWeight:700}}>{name}</div>
+          <div className="name">{name}</div>
         </div>
-        <div style={{textAlign:'right'}}>
+
+        <div className="card-actions">
           <div className="price">${price.toFixed(2)}</div>
           <button className="btn" onClick={() => onAdd(product)} aria-label={`Add ${name}`}>
-            <Plus size={14} style={{verticalAlign:'middle',marginRight:6}} /> Add
+            <Plus size={14} />
+            <span style={{marginLeft:6}}>Add</span>
           </button>
         </div>
       </div>
