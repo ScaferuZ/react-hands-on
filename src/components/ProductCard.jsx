@@ -1,26 +1,25 @@
 import React from 'react'
 import Card from './ui/Card'
-import Badge from './ui/Badge'
-import { ShoppingCart } from 'lucide-react'
+import { Badge } from './ui/Badge'
+import { Plus } from 'lucide-react'
 
 export default function ProductCard({ product, onAdd }) {
+  const { name, category, price, img } = product
+
   return (
-    <Card>
-      <img className="card-img" src={product.img} alt={product.name} />
-      <div style={{width:'100%'}}>
-        <div className="card-row">
-          <div>
-            <div style={{fontWeight:700}}>{product.name}</div>
-            <Badge>{product.category}</Badge>
-          </div>
-          <div style={{textAlign:'right'}}>
-            <div className="price">${product.price.toFixed(2)}</div>
-            <div style={{marginTop:8}}>
-              <button className="btn" onClick={() => onAdd(product)} aria-label={`Add ${product.name}`}>
-                <ShoppingCart size={14} style={{verticalAlign:'middle', marginRight:8}} /> Add
-              </button>
-            </div>
-          </div>
+    <Card className="product-card">
+      <img src={img} alt={name} className="card-img" />
+
+      <div className="card-row">
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <Badge>{category}</Badge>
+          <div style={{fontWeight:700}}>{name}</div>
+        </div>
+        <div style={{textAlign:'right'}}>
+          <div className="price">${price.toFixed(2)}</div>
+          <button className="btn" onClick={() => onAdd(product)} aria-label={`Add ${name}`}>
+            <Plus size={14} style={{verticalAlign:'middle',marginRight:6}} /> Add
+          </button>
         </div>
       </div>
     </Card>

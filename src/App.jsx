@@ -4,42 +4,62 @@ import ProductCard from './components/ProductCard'
 import OrderSummary from './components/OrderSummary'
 
 export default function App(){
-  const [items, setItems] = useState([])
+  const [cart, setCart] = useState({})
 
-  function handleAdd(product){
-    setItems((cur)=>{
-      const found = cur.find(i=>i.id===product.id)
-      if(found) return cur.map(i=> i.id===product.id ? {...i, qty: i.qty+1} : i)
-      return [{...product, qty:1}, ...cur]
+  const addToCart = (product) => {
+    setCart(prev => {
+      const existing = prev[product.id]
+      return {...prev, [product.id]: { product, qty: existing ? existing.qty + 1 : 1 }}
     })
   }
 
-  function handleRemove(id){
-    setItems((cur)=>cur.filter(i=>i.id!==id))
+  const inc = (product) => addToCart(product)
+
+  const dec = (product) => {
+    setCart(prev => {
+      const existing = prev[product.id]
+      if (!existing) return prev
+      if (existing.qty <= 1) {
+        const copy = {...prev}
+        delete copy[product.id]
+        return copy
+      }
+      return {...prev, [product.id]: { product, qty: existing.qty - 1 }}
+    })
   }
 
-  function handleClear(){
-    setItems([])
+  const remove = (product) => {
+    setCart(prev => {
+      const copy = {...prev}
+      delete copy[product.id]
+      return copy
+    })
   }
+
+  const clear = () => setCart({})
+
+  const items = Object.values(cart)
 
   return (
     <div className="app">
-      <div className="panel">
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-          <div>
-            <div className="title">Coffee Menu</div>
-            <div className="sub">Premium selection — minimalist design</div>
-          </div>
+      <div>
+        <div style={{padding:20}}>
+          <div className="title">Coffee POS — Premium Minimal</div>
+          <div className="sub">Select drinks on the left. Your order shows on the right.</div>
         </div>
 
-        <div className="grid" style={{marginTop:14}}>
-          {products.map(p=> (
-            <ProductCard key={p.id} product={p} onAdd={handleAdd} />
-          ))}
+        <div className="panel">
+          <div className="grid">
+            {products.map(p => (
+              <ProductCard key={p.id} product={p} onAdd={addToCart} />
+            ))}
+          </div>
         </div>
       </div>
 
-      <OrderSummary items={items} onRemove={handleRemove} onClear={handleClear} />
+      <div>
+        <OrderSummary items={items} onInc={inc} onDec={dec} onRemove={remove} onClear={clear} />
+      </div>
     </div>
   )
 }

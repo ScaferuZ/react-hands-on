@@ -1,40 +1,40 @@
-import React, { useState } from 'react'
-import ScrollArea from './ui/ScrollArea'
-import { Trash2 } from 'lucide-react'
-import Dialog from './ui/Dialog'
-import { useToast } from './ui/use-toast'
+import React from 'react'
+import { ScrollArea } from './ui/ScrollArea'
+import { Trash2, Plus, Minus } from 'lucide-react'
 
-export default function OrderSummary({ items, onRemove, onClear }) {
-  const total = items.reduce((s, it) => s + it.price * it.qty, 0)
-  const [open, setOpen] = useState(false)
-  const { toast } = useToast()
+export default function OrderSummary({ items = [], onInc, onDec, onRemove, onClear }) {
+  const subtotal = items.reduce((s, it) => s + it.product.price * it.qty, 0)
+  const tax = subtotal * 0.08
+  const total = subtotal + tax
 
   return (
     <div className="panel">
       <div className="order-header">
         <div>
-          <div className="title">Your Order</div>
-          <div className="sub">Review items and complete the sale</div>
+          <div style={{fontWeight:700}}>Your Order</div>
+          <div className="muted">Review items before checkout</div>
         </div>
-        <button className="btn" onClick={onClear} aria-label="Clear order">
-          <Trash2 size={16} />
-        </button>
+        <div>
+          <button className="btn" onClick={onClear} aria-label="Clear order"><Trash2 size={16} /></button>
+        </div>
       </div>
 
       <ScrollArea>
         {items.length === 0 ? (
-          <div className="empty muted">No items yet — add coffees from the left.</div>
+          <div className="empty muted">No items yet — add drinks from the left.</div>
         ) : (
           <div className="order-items">
-            {items.map((it) => (
-              <div key={it.id} className="order-item">
+            {items.map(({ product, qty }) => (
+              <div key={product.id} className="order-item">
                 <div style={{flex:1}}>
-                  <div className="name">{it.name}</div>
-                  <div className="qty">Qty: {it.qty} • ${it.price.toFixed(2)}</div>
+                  <div className="name">{product.name}</div>
+                  <div className="qty">{product.category} • {qty} × ${product.price.toFixed(2)}</div>
                 </div>
-                <div style={{textAlign:'right'}}>
-                  <div style={{fontWeight:700}}>${(it.price * it.qty).toFixed(2)}</div>
-                  <button className="btn" style={{marginTop:8}} onClick={() => onRemove(it.id)}>Remove</button>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                  <button className="btn" onClick={() => onDec(product)} aria-label="Decrease"><Minus size={14} /></button>
+                  <div style={{minWidth:24,textAlign:'center',fontWeight:700}}>{qty}</div>
+                  <button className="btn" onClick={() => onInc(product)} aria-label="Increase"><Plus size={14} /></button>
+                  <button className="btn" onClick={() => onRemove(product)} aria-label="Remove"><Trash2 size={14} /></button>
                 </div>
               </div>
             ))}
@@ -43,48 +43,20 @@ export default function OrderSummary({ items, onRemove, onClear }) {
       </ScrollArea>
 
       <div className="order-footer">
-        <div style={{display:'flex',flexDirection:'column',gap:6}}>
-          <div className="muted">Total</div>
-          <div style={{fontWeight:700,fontSize:18,color:'#fff'}}>${total.toFixed(2)}</div>
+        <div>
+          <div className="muted">Subtotal</div>
+          <div style={{fontWeight:700}}>${subtotal.toFixed(2)}</div>
         </div>
-        <div style={{display:'flex',gap:8}}>
-          <button className="btn" onClick={() => setOpen(true)}>Checkout</button>
+        <div style={{textAlign:'right'}}>
+          <div className="muted">Tax</div>
+          <div>${tax.toFixed(2)}</div>
+          <div style={{marginTop:6,fontSize:16,fontWeight:800}}>Total ${total.toFixed(2)}</div>
         </div>
       </div>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <div style={{minWidth:320}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-            <div style={{fontWeight:700,fontSize:16}}>Confirm Order</div>
-            <div className="muted">Total ${total.toFixed(2)}</div>
-          </div>
-
-          <div style={{maxHeight:240,overflow:'auto',marginBottom:12}}>
-            {items.length === 0 ? (
-              <div className="empty muted">No items in the order.</div>
-            ) : (
-              items.map((it) => (
-                <div key={it.id} style={{display:'flex',justifyContent:'space-between',padding:'6px 0',borderBottom:'1px solid rgba(255,255,255,0.02)'}}>
-                  <div>
-                    <div style={{fontWeight:700}}>{it.name}</div>
-                    <div className="muted" style={{fontSize:13}}>Qty: {it.qty} • ${it.price.toFixed(2)}</div>
-                  </div>
-                  <div style={{fontWeight:700}}>${(it.qty * it.price).toFixed(2)}</div>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div style={{display:'flex',justifyContent:'flex-end',gap:8}}>
-            <button className="btn" onClick={() => setOpen(false)}>Cancel</button>
-            <button className="btn" onClick={() => {
-              onClear()
-              setOpen(false)
-              toast({ title: 'Payment successful', description: `Collected $${total.toFixed(2)}` })
-            }}>Confirm Payment</button>
-          </div>
-        </div>
-      </Dialog>
+      <div style={{marginTop:12,display:'flex',gap:8}}>
+        <button className="btn" style={{flex:1}}>Checkout</button>
+      </div>
     </div>
   )
 }
