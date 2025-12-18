@@ -51,6 +51,19 @@ body{
 .product-card .card-row{gap:8px}
 .btn:hover{background:rgba(255,255,255,0.02)}
 
+/* Primary button for actions like checkout */
+.btn-primary{
+  background:var(--accent);color:#071322;border:none;padding:8px 12px;border-radius:10px;font-weight:800;box-shadow:0 6px 18px rgba(205,178,139,0.06)
+}
+
+.btn:disabled, .btn[disabled]{opacity:0.55;cursor:not-allowed}
+
+/* Dialog summary layout */
+.dialog-summary{min-width:360px;max-width:520px}
+.dialog-items{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.dialog-row{display:flex;justify-content:space-between}
+
+
 .order-header{display:flex;align-items:center;justify-content:space-between}
 .order-items{margin-top:12px;display:flex;flex-direction:column;gap:10px}
 .order-item{display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00))}
